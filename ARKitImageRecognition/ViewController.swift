@@ -12,6 +12,7 @@ import UIKit
 class ViewController: UIViewController, ARSCNViewDelegate {
     
     @IBOutlet var sceneView: ARSCNView!
+    var theImage: String = "theImage"
     
     @IBOutlet weak var blurView: UIVisualEffectView!
     
@@ -65,7 +66,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     var isRestartAvailable = true
 
     /// Creates a new AR configuration to run on the `session`.
-    /// - Tag: ARReferenceImage-Loading
+    /// - Tag: ARReferenceImage-Loading<
 	func resetTracking() {
         
         guard let referenceImages = ARReferenceImage.referenceImages(inGroupNamed: "AR Resources", bundle: nil) else {
@@ -90,6 +91,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             let plane = SCNPlane(width: referenceImage.physicalSize.width,
                                  height: referenceImage.physicalSize.height)
             let planeNode = SCNNode(geometry: plane)
+    
             planeNode.opacity = 0.25
             
             /*
@@ -99,6 +101,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
              */
             planeNode.eulerAngles.x = -.pi / 2
             
+            var centerPoint = plane.accessibilityActivationPoint;
+            
             /*
              Image anchors are not tracked after initial detection, so create an
              animation that limits the duration for which the plane visualization appears.
@@ -107,13 +111,55 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             
             // Add the plane visualization to the scene.
             node.addChildNode(planeNode)
+            
+          //  self.addPlayToScreen()
+            
         }
 
         DispatchQueue.main.async {
             let imageName = referenceImage.name ?? ""
             self.statusViewController.cancelAllScheduledMessages()
             self.statusViewController.showMessage("Detected image “\(imageName)”")
+            
+            
         }
+    }
+    /*
+    func addPlayToScreen(){
+        let texture = SKTexture(imageNamed: "play")
+       
+        let playNode = SCNNode(geometry: SCI?)
+        playNode.size = CGSize(width: 30, height: 30)
+        playNode.position = CGPoint(x: 150, y: 50) //buscar el punto medio horizontal de la pantalla
+        playNode.name = "play";
+        sceneView.scene.rootNode.addChildNode(playNode)
+        
+    }
+    */
+    
+    
+    func addAnchorWithName(name:String){
+        
+        theImage = name
+        
+        guard let sceneView = self.view as? ARSCNView else {
+            return
+        }
+        
+        // Create anchor using the camera's current position
+        if let currentFrame = sceneView.session.currentFrame {
+            
+            // Create a transform with a translation of 0.2 meters in front of the camera
+            var translation = matrix_identity_float4x4
+            translation.columns.3.z = -1
+            let transform = simd_mul(currentFrame.camera.transform, translation)
+            
+            // Add a new anchor to the session
+            let anchor = ARAnchor(transform: transform)
+            sceneView.session.add(anchor: anchor)
+        }
+        
+        
     }
 
     var imageHighlightAction: SCNAction {

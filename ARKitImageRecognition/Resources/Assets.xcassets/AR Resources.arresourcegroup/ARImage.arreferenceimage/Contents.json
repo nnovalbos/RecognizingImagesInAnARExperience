@@ -1,16 +1,13 @@
 {
   "images" : [
-    {
-      "idiom" : "universal",
-      "filename" : "imac-27.jpg"
-    }
+
   ],
   "info" : {
     "version" : 1,
     "author" : "xcode"
   },
   "properties" : {
-    "width" : 23.439,
+    "width" : 18.751000000000001,
     "unit" : "inches"
   }
 }
